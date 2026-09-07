@@ -1,0 +1,247 @@
+<routes>
+
+    <!-- ========================================= -->
+    <!-- VEHICLE TYPES -->
+    <!-- ========================================= -->
+
+    <!-- Cars -->
+    <vType id="car" vClass="passenger"
+           guiShape="passenger/sedan"
+           probability="0.60"
+           maxSpeed="20"
+           color="0,0,1"/>
+
+    <!-- Taxis -->
+    <vType id="taxi" vClass="taxi"
+           guiShape="passenger/hatchback"
+           probability="0.10"
+           maxSpeed="20"
+           color="1,1,0"/>
+
+    <!-- Buses -->
+    <vType id="bus" vClass="bus"
+           guiShape="bus"
+           probability="0.10"
+           maxSpeed="15"
+           color="0,1,0"/>
+
+    <!-- Trucks -->
+    <vType id="truck" vClass="truck"
+           guiShape="truck"
+           probability="0.10"
+           maxSpeed="15"
+           color="1,0.5,0"/>
+
+    <!-- Motorcycles -->
+    <vType id="motorcycle" vClass="motorcycle"
+           guiShape="motorcycle"
+           probability="0.10"
+           maxSpeed="22"
+           color="0.5,0,1"/>
+
+
+    <!-- ========================================= -->
+    <!-- NORMAL TRAFFIC VEHICLE DISTRIBUTION -->
+    <!-- ========================================= -->
+
+    <vTypeDistribution id="normalTraffic">
+
+        <vType id="normal_car"
+               vClass="passenger"
+               guiShape="passenger/sedan"
+               probability="0.60"
+               maxSpeed="20"
+               color="0,0,1"/>
+
+        <vType id="normal_taxi"
+               vClass="taxi"
+               guiShape="passenger/hatchback"
+               probability="0.10"
+               maxSpeed="20"
+               color="1,1,0"/>
+
+        <vType id="normal_bus"
+               vClass="bus"
+               guiShape="bus"
+               probability="0.10"
+               maxSpeed="15"
+               color="0,1,0"/>
+
+        <vType id="normal_truck"
+               vClass="truck"
+               guiShape="truck"
+               probability="0.10"
+               maxSpeed="15"
+               color="1,0.5,0"/>
+
+        <vType id="normal_motorcycle"
+               vClass="motorcycle"
+               guiShape="motorcycle"
+               probability="0.10"
+               maxSpeed="22"
+               color="0.5,0,1"/>
+
+    </vTypeDistribution>
+
+
+    <!-- ========================================= -->
+    <!-- ROUTES -->
+    <!-- ========================================= -->
+
+    <!-- From North -->
+    <route id="route_ns" edges="n_t t_s"/>
+    <route id="route_nw" edges="n_t t_w"/>
+    <route id="route_ne" edges="n_t t_e"/>
+
+    <!-- From West -->
+    <route id="route_we" edges="w_t t_e"/>
+    <route id="route_wn" edges="w_t t_n"/>
+    <route id="route_ws" edges="w_t t_s"/>
+
+    <!-- From East -->
+    <route id="route_ew" edges="e_t t_w"/>
+    <route id="route_en" edges="e_t t_n"/>
+    <route id="route_es" edges="e_t t_s"/>
+
+    <!-- From South -->
+    <route id="route_sn" edges="s_t t_n"/>
+    <route id="route_se" edges="s_t t_e"/>
+    <route id="route_sw" edges="s_t t_w"/>
+
+
+    <!-- ========================================= -->
+    <!-- S1: BALANCED NORMAL TRAFFIC -->
+    <!-- ========================================= -->
+
+    <!-- NORTH -->
+
+    <flow id="flow_ns"
+          type="normalTraffic"
+          route="route_ns"
+          begin="0"
+          end="1000"
+          vehsPerHour="200"
+          departSpeed="max"
+          departPos="base"
+          departLane="best"/>
+
+    <flow id="flow_nw"
+          type="normalTraffic"
+          route="route_nw"
+          begin="0"
+          end="1000"
+          vehsPerHour="150"
+          departSpeed="max"
+          departPos="base"
+          departLane="best"/>
+
+    <flow id="flow_ne"
+          type="normalTraffic"
+          route="route_ne"
+          begin="0"
+          end="1000"
+          vehsPerHour="150"
+          departSpeed="max"
+          departPos="base"
+          departLane="best"/>
+
+
+    <!-- SOUTH -->
+
+    <flow id="flow_sn"
+          type="normalTraffic"
+          route="route_sn"
+          begin="0"
+          end="1000"
+          vehsPerHour="200"
+          departSpeed="max"
+          departPos="base"
+          departLane="best"/>
+
+    <flow id="flow_se"
+          type="normalTraffic"
+          route="route_se"
+          begin="0"
+          end="1000"
+          vehsPerHour="150"
+          departSpeed="max"
+          departPos="base"
+          departLane="best"/>
+
+    <flow id="flow_sw"
+          type="normalTraffic"
+          route="route_sw"
+          begin="0"
+          end="1000"
+          vehsPerHour="150"
+          departSpeed="max"
+          departPos="base"
+          departLane="best"/>
+
+
+    <!-- EAST -->
+
+    <flow id="flow_ew"
+          type="normalTraffic"
+          route="route_ew"
+          begin="0"
+          end="1000"
+          vehsPerHour="200"
+          departSpeed="max"
+          departPos="base"
+          departLane="best"/>
+
+    <flow id="flow_en"
+          type="normalTraffic"
+          route="route_en"
+          begin="0"
+          end="1000"
+          vehsPerHour="150"
+          departSpeed="max"
+          departPos="base"
+          departLane="best"/>
+
+    <flow id="flow_es"
+          type="normalTraffic"
+          route="route_es"
+          begin="0"
+          end="1000"
+          vehsPerHour="150"
+          departSpeed="max"
+          departPos="base"
+          departLane="best"/>
+
+
+    <!-- WEST -->
+
+    <flow id="flow_we"
+          type="normalTraffic"
+          route="route_we"
+          begin="0"
+          end="1000"
+          vehsPerHour="200"
+          departSpeed="max"
+          departPos="base"
+          departLane="best"/>
+
+    <flow id="flow_wn"
+          type="normalTraffic"
+          route="route_wn"
+          begin="0"
+          end="1000"
+          vehsPerHour="150"
+          departSpeed="max"
+          departPos="base"
+          departLane="best"/>
+
+    <flow id="flow_ws"
+          type="normalTraffic"
+          route="route_ws"
+          begin="0"
+          end="1000"
+          vehsPerHour="150"
+          departSpeed="max"
+          departPos="base"
+          departLane="best"/>
+
+</routes>

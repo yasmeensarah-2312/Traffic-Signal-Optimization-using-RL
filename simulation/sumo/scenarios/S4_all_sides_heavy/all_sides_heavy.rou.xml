@@ -1,0 +1,167 @@
+<routes>
+
+    <!-- ========================================= -->
+    <!-- VEHICLE DISTRIBUTION -->
+    <!-- ========================================= -->
+
+    <vTypeDistribution id="heavyTraffic">
+
+        <vType id="heavy_car"
+               vClass="passenger"
+               guiShape="passenger/sedan"
+               probability="0.60"
+               maxSpeed="20"/>
+
+        <vType id="heavy_taxi"
+               vClass="taxi"
+               guiShape="passenger/hatchback"
+               probability="0.10"
+               maxSpeed="20"/>
+
+        <vType id="heavy_bus"
+               vClass="bus"
+               guiShape="bus"
+               probability="0.10"
+               maxSpeed="15"/>
+
+        <vType id="heavy_truck"
+               vClass="truck"
+               guiShape="truck"
+               probability="0.10"
+               maxSpeed="15"/>
+
+        <vType id="heavy_motorcycle"
+               vClass="motorcycle"
+               guiShape="motorcycle"
+               probability="0.10"
+               maxSpeed="22"/>
+
+    </vTypeDistribution>
+
+
+    <!-- ========================================= -->
+    <!-- ROUTES -->
+    <!-- ========================================= -->
+
+    <!-- From North -->
+    <route id="route_ns" edges="n_t t_s"/>
+    <route id="route_nw" edges="n_t t_w"/>
+    <route id="route_ne" edges="n_t t_e"/>
+
+    <!-- From West -->
+    <route id="route_we" edges="w_t t_e"/>
+    <route id="route_wn" edges="w_t t_n"/>
+    <route id="route_ws" edges="w_t t_s"/>
+
+    <!-- From East -->
+    <route id="route_ew" edges="e_t t_w"/>
+    <route id="route_en" edges="e_t t_n"/>
+    <route id="route_es" edges="e_t t_s"/>
+
+    <!-- From South -->
+    <route id="route_sn" edges="s_t t_n"/>
+    <route id="route_se" edges="s_t t_e"/>
+    <route id="route_sw" edges="s_t t_w"/>
+
+
+    <!-- ========================================= -->
+    <!-- S4: ALL SIDES HEAVY TRAFFIC -->
+    <!-- ========================================= -->
+
+
+    <!-- NORTH -->
+
+    <flow id="flow_ns" type="heavyTraffic"
+          route="route_ns"
+          begin="0" end="1000"
+          vehsPerHour="500"
+          departSpeed="max"
+          departLane="best"/>
+
+    <flow id="flow_nw" type="heavyTraffic"
+          route="route_nw"
+          begin="0" end="1000"
+          vehsPerHour="350"
+          departSpeed="max"
+          departLane="best"/>
+
+    <flow id="flow_ne" type="heavyTraffic"
+          route="route_ne"
+          begin="0" end="1000"
+          vehsPerHour="350"
+          departSpeed="max"
+          departLane="best"/>
+
+
+    <!-- SOUTH -->
+
+    <flow id="flow_sn" type="heavyTraffic"
+          route="route_sn"
+          begin="0" end="1000"
+          vehsPerHour="500"
+          departSpeed="max"
+          departLane="best"/>
+
+    <flow id="flow_se" type="heavyTraffic"
+          route="route_se"
+          begin="0" end="1000"
+          vehsPerHour="350"
+          departSpeed="max"
+          departLane="best"/>
+
+    <flow id="flow_sw" type="heavyTraffic"
+          route="route_sw"
+          begin="0" end="1000"
+          vehsPerHour="350"
+          departSpeed="max"
+          departLane="best"/>
+
+
+    <!-- EAST -->
+
+    <flow id="flow_ew" type="heavyTraffic"
+          route="route_ew"
+          begin="0" end="1000"
+          vehsPerHour="500"
+          departSpeed="max"
+          departLane="best"/>
+
+    <flow id="flow_en" type="heavyTraffic"
+          route="route_en"
+          begin="0" end="1000"
+          vehsPerHour="350"
+          departSpeed="max"
+          departLane="best"/>
+
+    <flow id="flow_es" type="heavyTraffic"
+          route="route_es"
+          begin="0" end="1000"
+          vehsPerHour="350"
+          departSpeed="max"
+          departLane="best"/>
+
+
+    <!-- WEST -->
+
+    <flow id="flow_we" type="heavyTraffic"
+          route="route_we"
+          begin="0" end="1000"
+          vehsPerHour="500"
+          departSpeed="max"
+          departLane="best"/>
+
+    <flow id="flow_wn" type="heavyTraffic"
+          route="route_wn"
+          begin="0" end="1000"
+          vehsPerHour="350"
+          departSpeed="max"
+          departLane="best"/>
+
+    <flow id="flow_ws" type="heavyTraffic"
+          route="route_ws"
+          begin="0" end="1000"
+          vehsPerHour="350"
+          departSpeed="max"
+          departLane="best"/>
+
+</routes>

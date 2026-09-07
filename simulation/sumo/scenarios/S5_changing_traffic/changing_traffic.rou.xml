@@ -1,0 +1,234 @@
+<routes>
+
+    <!-- ========================================= -->
+    <!-- MIXED VEHICLE DISTRIBUTION -->
+    <!-- ========================================= -->
+
+    <vTypeDistribution id="trafficMix">
+
+        <vType id="mix_car"
+               vClass="passenger"
+               guiShape="passenger/sedan"
+               probability="0.60"
+               maxSpeed="20"/>
+
+        <vType id="mix_taxi"
+               vClass="taxi"
+               guiShape="passenger/hatchback"
+               probability="0.10"
+               maxSpeed="20"/>
+
+        <vType id="mix_bus"
+               vClass="bus"
+               guiShape="bus"
+               probability="0.10"
+               maxSpeed="15"/>
+
+        <vType id="mix_truck"
+               vClass="truck"
+               guiShape="truck"
+               probability="0.10"
+               maxSpeed="15"/>
+
+        <vType id="mix_motorcycle"
+               vClass="motorcycle"
+               guiShape="motorcycle"
+               probability="0.10"
+               maxSpeed="22"/>
+
+    </vTypeDistribution>
+
+
+    <!-- ========================================= -->
+    <!-- ROUTES -->
+    <!-- ========================================= -->
+
+    <!-- From North -->
+    <route id="route_ns" edges="n_t t_s"/>
+    <route id="route_nw" edges="n_t t_w"/>
+    <route id="route_ne" edges="n_t t_e"/>
+
+    <!-- From West -->
+    <route id="route_we" edges="w_t t_e"/>
+    <route id="route_wn" edges="w_t t_n"/>
+    <route id="route_ws" edges="w_t t_s"/>
+
+    <!-- From East -->
+    <route id="route_ew" edges="e_t t_w"/>
+    <route id="route_en" edges="e_t t_n"/>
+    <route id="route_es" edges="e_t t_s"/>
+
+    <!-- From South -->
+    <route id="route_sn" edges="s_t t_n"/>
+    <route id="route_se" edges="s_t t_e"/>
+    <route id="route_sw" edges="s_t t_w"/>
+
+
+    <!-- ========================================= -->
+    <!-- PERIOD 1: 0 - 250 -->
+    <!-- NORTH/SOUTH HEAVY -->
+    <!-- ========================================= -->
+
+    <flow id="ns1" type="trafficMix" route="route_ns"
+          begin="0" end="250" vehsPerHour="400"/>
+
+    <flow id="nw1" type="trafficMix" route="route_nw"
+          begin="0" end="250" vehsPerHour="250"/>
+
+    <flow id="ne1" type="trafficMix" route="route_ne"
+          begin="0" end="250" vehsPerHour="250"/>
+
+    <flow id="sn1" type="trafficMix" route="route_sn"
+          begin="0" end="250" vehsPerHour="400"/>
+
+    <flow id="se1" type="trafficMix" route="route_se"
+          begin="0" end="250" vehsPerHour="250"/>
+
+    <flow id="sw1" type="trafficMix" route="route_sw"
+          begin="0" end="250" vehsPerHour="250"/>
+
+    <flow id="ew1" type="trafficMix" route="route_ew"
+          begin="0" end="250" vehsPerHour="100"/>
+
+    <flow id="en1" type="trafficMix" route="route_en"
+          begin="0" end="250" vehsPerHour="75"/>
+
+    <flow id="es1" type="trafficMix" route="route_es"
+          begin="0" end="250" vehsPerHour="75"/>
+
+    <flow id="we1" type="trafficMix" route="route_we"
+          begin="0" end="250" vehsPerHour="100"/>
+
+    <flow id="wn1" type="trafficMix" route="route_wn"
+          begin="0" end="250" vehsPerHour="75"/>
+
+    <flow id="ws1" type="trafficMix" route="route_ws"
+          begin="0" end="250" vehsPerHour="75"/>
+
+
+    <!-- ========================================= -->
+    <!-- PERIOD 2: 250 - 500 -->
+    <!-- EAST/WEST HEAVY -->
+    <!-- ========================================= -->
+
+    <flow id="ns2" type="trafficMix" route="route_ns"
+          begin="250" end="500" vehsPerHour="100"/>
+
+    <flow id="nw2" type="trafficMix" route="route_nw"
+          begin="250" end="500" vehsPerHour="75"/>
+
+    <flow id="ne2" type="trafficMix" route="route_ne"
+          begin="250" end="500" vehsPerHour="75"/>
+
+    <flow id="sn2" type="trafficMix" route="route_sn"
+          begin="250" end="500" vehsPerHour="100"/>
+
+    <flow id="se2" type="trafficMix" route="route_se"
+          begin="250" end="500" vehsPerHour="75"/>
+
+    <flow id="sw2" type="trafficMix" route="route_sw"
+          begin="250" end="500" vehsPerHour="75"/>
+
+    <flow id="ew2" type="trafficMix" route="route_ew"
+          begin="250" end="500" vehsPerHour="400"/>
+
+    <flow id="en2" type="trafficMix" route="route_en"
+          begin="250" end="500" vehsPerHour="250"/>
+
+    <flow id="es2" type="trafficMix" route="route_es"
+          begin="250" end="500" vehsPerHour="250"/>
+
+    <flow id="we2" type="trafficMix" route="route_we"
+          begin="250" end="500" vehsPerHour="400"/>
+
+    <flow id="wn2" type="trafficMix" route="route_wn"
+          begin="250" end="500" vehsPerHour="250"/>
+
+    <flow id="ws2" type="trafficMix" route="route_ws"
+          begin="250" end="500" vehsPerHour="250"/>
+
+
+    <!-- ========================================= -->
+    <!-- PERIOD 3: 500 - 750 -->
+    <!-- NORTH/SOUTH HEAVY AGAIN -->
+    <!-- ========================================= -->
+
+    <flow id="ns3" type="trafficMix" route="route_ns"
+          begin="500" end="750" vehsPerHour="400"/>
+
+    <flow id="nw3" type="trafficMix" route="route_nw"
+          begin="500" end="750" vehsPerHour="250"/>
+
+    <flow id="ne3" type="trafficMix" route="route_ne"
+          begin="500" end="750" vehsPerHour="250"/>
+
+    <flow id="sn3" type="trafficMix" route="route_sn"
+          begin="500" end="750" vehsPerHour="400"/>
+
+    <flow id="se3" type="trafficMix" route="route_se"
+          begin="500" end="750" vehsPerHour="250"/>
+
+    <flow id="sw3" type="trafficMix" route="route_sw"
+          begin="500" end="750" vehsPerHour="250"/>
+
+    <flow id="ew3" type="trafficMix" route="route_ew"
+          begin="500" end="750" vehsPerHour="100"/>
+
+    <flow id="en3" type="trafficMix" route="route_en"
+          begin="500" end="750" vehsPerHour="75"/>
+
+    <flow id="es3" type="trafficMix" route="route_es"
+          begin="500" end="750" vehsPerHour="75"/>
+
+    <flow id="we3" type="trafficMix" route="route_we"
+          begin="500" end="750" vehsPerHour="100"/>
+
+    <flow id="wn3" type="trafficMix" route="route_wn"
+          begin="500" end="750" vehsPerHour="75"/>
+
+    <flow id="ws3" type="trafficMix" route="route_ws"
+          begin="500" end="750" vehsPerHour="75"/>
+
+
+    <!-- ========================================= -->
+    <!-- PERIOD 4: 750 - 1000 -->
+    <!-- EAST/WEST HEAVY AGAIN -->
+    <!-- ========================================= -->
+
+    <flow id="ns4" type="trafficMix" route="route_ns"
+          begin="750" end="1000" vehsPerHour="100"/>
+
+    <flow id="nw4" type="trafficMix" route="route_nw"
+          begin="750" end="1000" vehsPerHour="75"/>
+
+    <flow id="ne4" type="trafficMix" route="route_ne"
+          begin="750" end="1000" vehsPerHour="75"/>
+
+    <flow id="sn4" type="trafficMix" route="route_sn"
+          begin="750" end="1000" vehsPerHour="100"/>
+
+    <flow id="se4" type="trafficMix" route="route_se"
+          begin="750" end="1000" vehsPerHour="75"/>
+
+    <flow id="sw4" type="trafficMix" route="route_sw"
+          begin="750" end="1000" vehsPerHour="75"/>
+
+    <flow id="ew4" type="trafficMix" route="route_ew"
+          begin="750" end="1000" vehsPerHour="400"/>
+
+    <flow id="en4" type="trafficMix" route="route_en"
+          begin="750" end="1000" vehsPerHour="250"/>
+
+    <flow id="es4" type="trafficMix" route="route_es"
+          begin="750" end="1000" vehsPerHour="250"/>
+
+    <flow id="we4" type="trafficMix" route="route_we"
+          begin="750" end="1000" vehsPerHour="400"/>
+
+    <flow id="wn4" type="trafficMix" route="route_wn"
+          begin="750" end="1000" vehsPerHour="250"/>
+
+    <flow id="ws4" type="trafficMix" route="route_ws"
+          begin="750" end="1000" vehsPerHour="250"/>
+
+</routes>
