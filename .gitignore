@@ -216,3 +216,26 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+
+# YOLO model weights
+*.pt
+
+# Video files
+*.mp4
+*.avi
+*.mov
+*.mkv
+
+# Generated traffic data
+data/*.csv
+
+# Test images
+bus.jpg
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual environment
+venv/
