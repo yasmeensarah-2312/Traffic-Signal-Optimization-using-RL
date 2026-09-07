@@ -1,0 +1,180 @@
+<routes>
+
+    <!-- ========================================= -->
+    <!-- MIXED NORMAL TRAFFIC -->
+    <!-- ========================================= -->
+
+    <vTypeDistribution id="trafficMix">
+
+        <vType id="mix_car"
+               vClass="passenger"
+               guiShape="passenger/sedan"
+               probability="0.60"
+               maxSpeed="20"/>
+
+        <vType id="mix_taxi"
+               vClass="taxi"
+               guiShape="passenger/hatchback"
+               probability="0.10"
+               maxSpeed="20"/>
+
+        <vType id="mix_bus"
+               vClass="bus"
+               guiShape="bus"
+               probability="0.10"
+               maxSpeed="15"/>
+
+        <vType id="mix_truck"
+               vClass="truck"
+               guiShape="truck"
+               probability="0.10"
+               maxSpeed="15"/>
+
+        <vType id="mix_motorcycle"
+               vClass="motorcycle"
+               guiShape="motorcycle"
+               probability="0.10"
+               maxSpeed="22"/>
+
+    </vTypeDistribution>
+
+
+    <!-- ========================================= -->
+    <!-- AMBULANCE TYPE -->
+    <!-- ========================================= -->
+
+    <vType id="ambulance"
+           vClass="emergency"
+           guiShape="emergency"
+           maxSpeed="25"
+           accel="3.0"
+           decel="5.0"
+           length="5"
+           width="2"/>
+
+
+    <!-- ========================================= -->
+    <!-- ROUTES -->
+    <!-- ========================================= -->
+
+    <!-- From North -->
+    <route id="route_ns" edges="n_t t_s"/>
+    <route id="route_nw" edges="n_t t_w"/>
+    <route id="route_ne" edges="n_t t_e"/>
+
+    <!-- From West -->
+    <route id="route_we" edges="w_t t_e"/>
+    <route id="route_wn" edges="w_t t_n"/>
+    <route id="route_ws" edges="w_t t_s"/>
+
+    <!-- From East -->
+    <route id="route_ew" edges="e_t t_w"/>
+    <route id="route_en" edges="e_t t_n"/>
+    <route id="route_es" edges="e_t t_s"/>
+
+    <!-- From South -->
+    <route id="route_sn" edges="s_t t_n"/>
+    <route id="route_se" edges="s_t t_e"/>
+    <route id="route_sw" edges="s_t t_w"/>
+
+
+    <!-- ========================================= -->
+    <!-- NORMAL TRAFFIC -->
+    <!-- ========================================= -->
+
+    <!-- North -->
+
+    <flow id="flow_ns" type="trafficMix"
+          route="route_ns"
+          begin="0" end="1000"
+          vehsPerHour="250"/>
+
+    <flow id="flow_nw" type="trafficMix"
+          route="route_nw"
+          begin="0" end="1000"
+          vehsPerHour="150"/>
+
+    <flow id="flow_ne" type="trafficMix"
+          route="route_ne"
+          begin="0" end="1000"
+          vehsPerHour="150"/>
+
+
+    <!-- South -->
+
+    <flow id="flow_sn" type="trafficMix"
+          route="route_sn"
+          begin="0" end="1000"
+          vehsPerHour="250"/>
+
+    <flow id="flow_se" type="trafficMix"
+          route="route_se"
+          begin="0" end="1000"
+          vehsPerHour="150"/>
+
+    <flow id="flow_sw" type="trafficMix"
+          route="route_sw"
+          begin="0" end="1000"
+          vehsPerHour="150"/>
+
+
+    <!-- East -->
+
+    <flow id="flow_ew" type="trafficMix"
+          route="route_ew"
+          begin="0" end="1000"
+          vehsPerHour="250"/>
+
+    <flow id="flow_en" type="trafficMix"
+          route="route_en"
+          begin="0" end="1000"
+          vehsPerHour="150"/>
+
+    <flow id="flow_es" type="trafficMix"
+          route="route_es"
+          begin="0" end="1000"
+          vehsPerHour="150"/>
+
+
+    <!-- West -->
+
+    <flow id="flow_we" type="trafficMix"
+          route="route_we"
+          begin="0" end="1000"
+          vehsPerHour="250"/>
+
+    <flow id="flow_wn" type="trafficMix"
+          route="route_wn"
+          begin="0" end="1000"
+          vehsPerHour="150"/>
+
+    <flow id="flow_ws" type="trafficMix"
+          route="route_ws"
+          begin="0" end="1000"
+          vehsPerHour="150"/>
+
+
+    <!-- ========================================= -->
+    <!-- TWO AMBULANCES -->
+    <!-- ========================================= -->
+
+    <!-- Ambulance 1: North → South -->
+
+    <vehicle id="ambulance_1"
+             type="ambulance"
+             route="route_ns"
+             depart="300"
+             departSpeed="max"
+             departLane="best"/>
+
+
+    <!-- Ambulance 2: East → West -->
+
+    <vehicle id="ambulance_2"
+             type="ambulance"
+             route="route_ew"
+             depart="320"
+             departSpeed="max"
+             departLane="best"/>
+
+</routes>
