@@ -239,3 +239,11 @@ __pycache__/
 
 # Virtual environment
 venv/
+# Datasets
+data/
+
+# YOLO training outputs
+runs/
+
+# YOLO model weights
+*.pt
