@@ -1,152 +1,65 @@
 from ultralytics import YOLO
 import cv2
-import sys
 import os
-import numpy as np
-
-# --------------------------------------------------
-# Project root
-# --------------------------------------------------
-
-PROJECT_ROOT = os.path.dirname(
-    os.path.dirname(
-        os.path.abspath(__file__)
-    )
-)
-
-sys.path.append(PROJECT_ROOT)
-
-from simulation.signal_controller import get_signal_decision
 
 
-# --------------------------------------------------
-# Load trained ambulance model
-# --------------------------------------------------
+# ==================================================
+# SETTINGS
+# ==================================================
 
-model = YOLO(
-    "runs/detect/ambulance_v1/weights/best.pt"
-)
+MODEL_PATH = "runs/detect/ambulance_v1/weights/best.pt"
+VIDEO_PATH = "data/ambulance_test2.mp4"
+
+# YOLO confidence
+CONFIDENCE = 0.50
+
+# A detection must remain present for this many
+# consecutive frames before we accept it.
+REQUIRED_FRAMES = 10
+
+# Minimum bounding-box area.
+# Very small detections are usually unreliable.
+MIN_BOX_AREA = 2500
 
 
-# --------------------------------------------------
-# Input video
-# --------------------------------------------------
+# ==================================================
+# LOAD MODEL
+# ==================================================
 
-video_path = "data/ambulance_test2.mp4"
+print("Loading V1 ambulance model...")
 
-cap = cv2.VideoCapture(video_path)
+model = YOLO(MODEL_PATH)
+
+print("Model loaded.")
+print("Classes:", model.names)
+
+
+# ==================================================
+# OPEN VIDEO
+# ==================================================
+
+cap = cv2.VideoCapture(VIDEO_PATH)
 
 if not cap.isOpened():
+
     print("ERROR: Could not open video.")
+
     exit()
 
 
-# --------------------------------------------------
-# Emergency confirmation settings
-# --------------------------------------------------
+# ==================================================
+# TRACKING STATE
+# ==================================================
 
-REQUIRED_FRAMES = 5
+candidate_id = None
+candidate_frames = 0
 
-detection_count = 0
-
-confirmed_lane = None
-
-last_track_id = None
+ambulance_confirmed = False
 
 
-# --------------------------------------------------
-# Traffic signal display
-# --------------------------------------------------
-
-def create_signal_display(signal_decision, confirmed):
-
-    image = np.zeros(
-        (450, 900, 3),
-        dtype=np.uint8
-    )
-
-    cv2.putText(
-        image,
-        "EMERGENCY TRAFFIC SIGNAL CONTROL",
-        (180, 45),
-        cv2.FONT_HERSHEY_SIMPLEX,
-        0.9,
-        (255, 255, 255),
-        2
-    )
-
-    lanes = [
-        ("LANE 1", "GREEN_LANE_1"),
-        ("LANE 2", "GREEN_LANE_2"),
-        ("LANE 3", "GREEN_LANE_3")
-    ]
-
-    positions = [150, 450, 750]
-
-    for i, (lane_name, lane_signal) in enumerate(lanes):
-
-        x = positions[i]
-
-        cv2.putText(
-            image,
-            lane_name,
-            (x - 55, 95),
-            cv2.FONT_HERSHEY_SIMPLEX,
-            0.7,
-            (255, 255, 255),
-            2
-        )
-
-        if confirmed and signal_decision == lane_signal:
-            red_color = (0, 0, 0)
-            green_color = (0, 255, 0)
-        else:
-            red_color = (0, 0, 255)
-            green_color = (0, 0, 0)
-
-        cv2.circle(
-            image,
-            (x, 180),
-            40,
-            red_color,
-            -1
-        )
-
-        cv2.circle(
-            image,
-            (x, 320),
-            40,
-            green_color,
-            -1
-        )
-
-    if confirmed:
-
-        status = "AMBULANCE CONFIRMED"
-
-    else:
-
-        status = (
-            f"VERIFYING AMBULANCE "
-            f"({detection_count}/{REQUIRED_FRAMES})"
-        )
-
-    cv2.putText(
-        image,
-        status,
-        (260, 410),
-        cv2.FONT_HERSHEY_SIMPLEX,
-        0.7,
-        (255, 255, 255),
-        2
-    )
-
-    return image
-
-
-# --------------------------------------------------
-# Process video
-# --------------------------------------------------
+# ==================================================
+# MAIN LOOP
+# ==================================================
 
 while True:
 
@@ -155,68 +68,39 @@ while True:
     if not ret:
         break
 
-    height, width = frame.shape[:2]
-
-    # --------------------------------------------------
-    # Lane boundaries
-    # --------------------------------------------------
-
-    lane1 = width // 3
-    lane2 = (width // 3) * 2
-
-    # --------------------------------------------------
-    # YOLO tracking
-    # --------------------------------------------------
 
     results = model.track(
         frame,
         persist=True,
-        conf=0.30,
+        conf=CONFIDENCE,
         tracker="bytetrack.yaml",
         verbose=False
     )
 
+
     output = frame.copy()
 
-    # --------------------------------------------------
-    # Draw lane boundaries
-    # --------------------------------------------------
-
-    cv2.line(
-        output,
-        (lane1, 0),
-        (lane1, height),
-        (255, 255, 255),
-        2
-    )
-
-    cv2.line(
-        output,
-        (lane2, 0),
-        (lane2, height),
-        (255, 255, 255),
-        2
-    )
-
-    # --------------------------------------------------
-    # Detection found in current frame
-    # --------------------------------------------------
-
-    current_detection = False
-
-    current_lane = None
-
+    detected_candidate = False
     current_id = None
 
-    # --------------------------------------------------
-    # Process detections
-    # --------------------------------------------------
 
-    if results[0].boxes is not None:
+    # ==================================================
+    # PROCESS DETECTIONS
+    # ==================================================
 
-        for box in results[0].boxes:
+    boxes = results[0].boxes
+
+
+    if boxes is not None and len(boxes) > 0:
+
+        for box in boxes:
 
             confidence = float(box.conf[0])
+
+
+            # ------------------------------------------
+            # Bounding box
+            # ------------------------------------------
 
             x1, y1, x2, y2 = (
                 box.xyxy[0]
@@ -229,8 +113,23 @@ while True:
                 (x1, y1, x2, y2)
             )
 
-            center_x = (x1 + x2) // 2
-            center_y = (y1 + y2) // 2
+
+            # ------------------------------------------
+            # Box area
+            # ------------------------------------------
+
+            box_width = x2 - x1
+            box_height = y2 - y1
+
+            box_area = (
+                box_width *
+                box_height
+            )
+
+
+            # ------------------------------------------
+            # Tracking ID
+            # ------------------------------------------
 
             if box.id is not None:
 
@@ -240,183 +139,152 @@ while True:
 
                 track_id = -1
 
-            # --------------------------------------------------
-            # Determine lane
-            # --------------------------------------------------
 
-            if center_x < lane1:
+            # ------------------------------------------
+            # Candidate filter
+            # ------------------------------------------
 
-                lane = 1
+            if box_area < MIN_BOX_AREA:
 
-            elif center_x < lane2:
+                continue
 
-                lane = 2
+
+            # ------------------------------------------
+            # Candidate found
+            # ------------------------------------------
+
+            detected_candidate = True
+            current_id = track_id
+
+
+            # ------------------------------------------
+            # Consecutive-frame confirmation
+            # ------------------------------------------
+
+            if current_id == candidate_id:
+
+                candidate_frames += 1
 
             else:
 
-                lane = 3
+                candidate_id = current_id
+                candidate_frames = 1
 
-            # --------------------------------------------------
-            # Record detection
-            # --------------------------------------------------
 
-            current_detection = True
-            current_lane = lane
-            current_id = track_id
+            # ------------------------------------------
+            # Confirm ambulance
+            # ------------------------------------------
 
-            # --------------------------------------------------
-            # Draw bounding box
-            # --------------------------------------------------
+            if candidate_frames >= REQUIRED_FRAMES:
 
-            cv2.rectangle(
-                output,
-                (x1, y1),
-                (x2, y2),
-                (255, 0, 0),
-                2
-            )
+                ambulance_confirmed = True
 
-            # Center point
 
-            cv2.circle(
-                output,
-                (center_x, center_y),
-                5,
-                (0, 0, 255),
-                -1
-            )
+            # ------------------------------------------
+            # Draw detection
+            # ------------------------------------------
 
-            # Label
+            if ambulance_confirmed:
 
-            label = (
-                f"ID:{track_id} "
-                f"Ambulance "
-                f"{confidence:.2f} "
-                f"Lane:{lane}"
-            )
+                cv2.rectangle(
+                    output,
+                    (x1, y1),
+                    (x2, y2),
+                    (255, 0, 0),
+                    2
+                )
 
-            cv2.putText(
-                output,
-                label,
-                (x1, max(y1 - 10, 20)),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                0.55,
-                (255, 255, 255),
-                2
-            )
+
+                label = (
+                    f"AMBULANCE "
+                    f"ID:{track_id} "
+                    f"{confidence:.2f}"
+                )
+
+
+                cv2.putText(
+                    output,
+                    label,
+                    (x1, max(y1 - 10, 25)),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.6,
+                    (255, 255, 255),
+                    2
+                )
+
+
+                print(
+                    f"AMBULANCE | "
+                    f"ID:{track_id} | "
+                    f"Confidence:{confidence:.2f} | "
+                    f"Frames:{candidate_frames}"
+                )
+
 
             break
 
-    # --------------------------------------------------
-    # Confirmation logic
-    # --------------------------------------------------
 
-    if current_detection:
+    # ==================================================
+    # RESET WHEN DETECTION DISAPPEARS
+    # ==================================================
 
-        # Same tracking ID
-        if current_id == last_track_id:
+    if not detected_candidate:
 
-            detection_count += 1
+        candidate_id = None
+        candidate_frames = 0
 
-        else:
+        ambulance_confirmed = False
 
-            detection_count = 1
 
-            confirmed_lane = None
+    # ==================================================
+    # STATUS
+    # ==================================================
 
-        last_track_id = current_id
+    if ambulance_confirmed:
 
-        # Confirm after required frames
-        if detection_count >= REQUIRED_FRAMES:
-
-            confirmed_lane = current_lane
+        status = "EMERGENCY: AMBULANCE DETECTED"
 
     else:
 
-        # No detection
-        detection_count = 0
-        confirmed_lane = None
-        last_track_id = None
+        status = "NORMAL: NO CONFIRMED AMBULANCE"
 
-    # --------------------------------------------------
-    # Signal decision
-    # --------------------------------------------------
-
-    if confirmed_lane is not None:
-
-        signal_decision = get_signal_decision(
-            confirmed_lane
-        )
-
-        confirmed = True
-
-    else:
-
-        signal_decision = "NORMAL_OPERATION"
-
-        confirmed = False
-
-    # --------------------------------------------------
-    # Display system status
-    # --------------------------------------------------
 
     cv2.putText(
         output,
-        f"Signal: {signal_decision}",
-        (30, 50),
-        cv2.FONT_HERSHEY_SIMPLEX,
-        0.8,
-        (0, 255, 0),
-        2
-    )
-
-    cv2.putText(
-        output,
-        f"Confirmation: {detection_count}/{REQUIRED_FRAMES}",
-        (30, 85),
+        status,
+        (30, 40),
         cv2.FONT_HERSHEY_SIMPLEX,
         0.7,
         (255, 255, 255),
         2
     )
 
-    # --------------------------------------------------
-    # Traffic signal window
-    # --------------------------------------------------
 
-    signal_window = create_signal_display(
-        signal_decision,
-        confirmed
-    )
-
-    # --------------------------------------------------
-    # Show windows
-    # --------------------------------------------------
+    # ==================================================
+    # DISPLAY
+    # ==================================================
 
     cv2.imshow(
-        "Ambulance Detection",
+        "V1 Ambulance Detection - Filtered",
         output
     )
 
-    cv2.imshow(
-        "Traffic Signal Simulation",
-        signal_window
-    )
 
-    # --------------------------------------------------
-    # Quit
-    # --------------------------------------------------
+    # ==================================================
+    # QUIT
+    # ==================================================
 
     if cv2.waitKey(1) & 0xFF == ord("q"):
+
         break
 
 
-# --------------------------------------------------
-# Cleanup
-# --------------------------------------------------
+# ==================================================
+# CLEANUP
+# ==================================================
 
 cap.release()
-
 cv2.destroyAllWindows()
 
-print("Emergency traffic system completed.")
+print()
+print("Detection completed.")
