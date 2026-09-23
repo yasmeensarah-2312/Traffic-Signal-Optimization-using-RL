@@ -1,0 +1,2 @@
+scenario,total_waiting_time,average_queue_length,throughput,average_delay,simulation_steps
+S1_normal,58730.00,32.38,560,37.70,1814
