@@ -34,15 +34,22 @@ def start_sumo(scenario_name):
         scenario_name
     )
 
+    # Find the SUMO configuration file automatically
+    config_files = [
+        file
+        for file in os.listdir(scenario_dir)
+        if file.endswith(".sumocfg")
+    ]
+
+    if not config_files:
+        raise FileNotFoundError(
+            f"SUMO configuration not found:\n{scenario_dir}"
+        )
+
     config_file = os.path.join(
         scenario_dir,
-        "normal.sumocfg"
+        config_files[0]
     )
-
-    if not os.path.exists(config_file):
-        raise FileNotFoundError(
-            f"SUMO configuration not found:\n{config_file}"
-        )
 
     command = [
         SUMO_BINARY,
@@ -89,7 +96,7 @@ def collect_metrics():
         total_steps += 1
 
         # ------------------------------------------
-        # THROUGHput
+        # THROUGHPUT
         # ------------------------------------------
 
         arrived = traci.simulation.getArrivedNumber()
@@ -107,7 +114,9 @@ def collect_metrics():
 
         for vehicle_id in vehicle_ids:
 
-            speed = traci.vehicle.getSpeed(vehicle_id)
+            speed = traci.vehicle.getSpeed(
+                vehicle_id
+            )
 
             # Waiting vehicle
             if speed < 0.1:
@@ -119,31 +128,42 @@ def collect_metrics():
             )
 
             if allowed_speed > 0:
+
                 delay = max(
                     0.0,
                     1.0 - (speed / allowed_speed)
                 )
+
                 current_delay += delay
 
-        # Queue length
+        # ------------------------------------------
+        # QUEUE LENGTH
+        # ------------------------------------------
+
         for direction in LANES:
 
             for lane in LANES[direction]:
 
                 try:
+
                     current_queue += (
                         traci.lane.getLastStepHaltingNumber(
                             lane
                         )
                     )
+
                 except Exception:
+
                     pass
 
         total_waiting_time += current_waiting
         total_queue_length += current_queue
         total_delay += current_delay
 
-        # Print progress every 100 steps
+        # ------------------------------------------
+        # PRINT PROGRESS
+        # ------------------------------------------
+
         if total_steps % 100 == 0:
 
             print(
@@ -192,7 +212,8 @@ def collect_metrics():
 
 if __name__ == "__main__":
 
-    scenario = "S1_normal"
+    # Keep S1 for the first test
+    scenario = "S6_sudden_surge"
 
     try:
 
@@ -240,8 +261,10 @@ if __name__ == "__main__":
     finally:
 
         try:
+
             traci.close()
             print("\nSUMO simulation closed.")
 
         except Exception:
+
             pass

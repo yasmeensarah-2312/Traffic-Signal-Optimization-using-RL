@@ -1,2 +1,7 @@
 scenario,total_waiting_time,average_queue_length,throughput,average_delay,simulation_steps
 S1_normal,58730.00,32.38,560,37.70,1814
+S2_equal_opposite,80561.00,28.73,644,34.03,2804
+S3_one_side_heavy,74083.00,17.02,487,20.08,4352
+S4_all_sides_heavy,248374.00,58.26,1340,68.71,4263
+S5_changing_traffic,84787.00,40.94,664,48.64,2071
+S6_sudden_surge,96727.00,43.95,708,52.29,2201
