@@ -36,17 +36,31 @@ SCENARIOS = [
     "S6_sudden_surge",
 ]
 
-NUM_EPISODES = 60          # 10 full passes through all 6 scenarios
+NUM_EPISODES = 150         # 25 full passes through all 6 scenarios
 MAX_STEPS_PER_EPISODE = 500
 GUI = False                 # keep the SUMO window off during training -- much faster
-MODEL_SAVE_PATH = "../models/dqn_traffic_model.pt"
-LOG_SAVE_PATH = "../results/training_log.csv"
+
+# Exploration schedule. Epsilon is computed from NUM_EPISODES so that it
+# always reaches EPSILON_END after 80% of the episodes. The last 20% then
+# train with almost no random actions. (The old fixed 0.995 decay only
+# reached ~0.74 after 60 episodes, so the agent was still ~74% random.)
+EPSILON_START = 1.0
+EPSILON_END = 0.05
+EPSILON_DECAY = (EPSILON_END / EPSILON_START) ** (1.0 / (0.8 * NUM_EPISODES))
+
+# v2 filenames so the original model/log on person2-dqn stay untouched.
+MODEL_SAVE_PATH = "../models/dqn_traffic_model_v2.pt"
+LOG_SAVE_PATH = "../results/training_log_v2.csv"
 # -------------------------------------------
 
 
 def run_training():
     env = TrafficEnv(scenario_name=SCENARIOS[0], gui=GUI, max_steps=MAX_STEPS_PER_EPISODE)
-    agent = DQNAgent()
+    agent = DQNAgent(
+        epsilon_start=EPSILON_START,
+        epsilon_end=EPSILON_END,
+        epsilon_decay=EPSILON_DECAY,
+    )
 
     os.makedirs(os.path.dirname(MODEL_SAVE_PATH), exist_ok=True)
     os.makedirs(os.path.dirname(LOG_SAVE_PATH), exist_ok=True)
@@ -55,7 +69,10 @@ def run_training():
 
     for episode in range(1, NUM_EPISODES + 1):
         # Cycle through scenarios in order so each one gets equal exposure
-        # (e.g. with 60 episodes and 6 scenarios, each scenario is used 10 times).
+        # (e.g. with 150 episodes and 6 scenarios, each scenario is used 25 times).
+        # NOTE: the numbers logged below are measured WHILE exploring (random
+        # actions mixed in), so they show training progress only. To measure
+        # how good the learned policy really is, run evaluate.py.
         scenario = SCENARIOS[(episode - 1) % len(SCENARIOS)]
         state = env.reset(scenario_name=scenario)
 

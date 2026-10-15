@@ -10,6 +10,8 @@ traffic signal control on top of Person 1's SUMO simulation.
 | `traffic_env.py` | Wraps Person 1's `traffic_interface.py` into a simple `reset()` / `step()` environment, so the DQN doesn't need to know anything about SUMO or TraCI directly. |
 | `dqn_agent.py` | The Q-network (neural network), replay buffer, and training logic. |
 | `train.py` | Runs the full training loop and saves the model + logs. |
+| `evaluate.py` | Runs a saved model with exploration off on every scenario and compares it with a random policy. |
+| `validate_reward.py` | Checks that the reward agrees with measured waiting time, queue length and throughput. |
 
 ## How to run training
 
@@ -47,10 +49,31 @@ directly.
 
 ## Reward function
 
-`reward = total_waiting_time_before_action - total_waiting_time_after_action`
+`reward = -(average queue length over the decision interval) / 10`
 
-Positive reward means waiting time decreased (good); negative means it
-increased. This directly incentivizes the agent to reduce congestion.
+- Queue length = vehicles stopped on the incoming lanes (SUMO "halting
+  vehicles"), summed over the four directions.
+- It is sampled at every simulation step of a decision, yellow steps
+  included, then averaged.
+- The reward is always <= 0; closer to 0 means shorter queues.
+- The divisor 10 (`REWARD_QUEUE_SCALE` in `traffic_env.py`) only keeps reward
+  values small enough for stable DQN training.
+
+**Why not the earlier version.** The first version used
+`waiting_time_before - waiting_time_after`, where waiting time is summed over
+the vehicles currently on the network. That number also changes when vehicles
+enter or leave, not only because of the chosen phase, and over an episode it
+mostly measures how the total changed between start and end rather than how
+low it stayed. It also ignored the yellow steps, so switching phases looked
+free. The queue-based reward measures how bad traffic was while the action was
+in effect.
+
+**Validation.** `validate_reward.py` plays policies of different quality
+(stuck on one phase, random, round-robin, and the DQN if a model exists) on
+every scenario and checks that episode return is negatively correlated with
+measured average waiting time and queue length and positively with
+throughput. It scores the old reward on the same episodes for comparison.
+Output: `../results/reward_validation.csv`.
 
 ## Training scenarios
 

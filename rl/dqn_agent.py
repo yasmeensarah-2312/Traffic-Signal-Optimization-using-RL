@@ -105,9 +105,14 @@ class DQNAgent:
 
         self.memory = ReplayBuffer(buffer_capacity)
 
-    def select_action(self, state):
-        """Epsilon-greedy: mostly random early on, mostly network-driven later."""
-        if random.random() < self.epsilon:
+    def select_action(self, state, greedy=False):
+        """
+        Training (default): epsilon-greedy, mostly random early on, mostly
+        network-driven later.
+        Evaluation: pass greedy=True to always take the network's best
+        action and ignore epsilon completely.
+        """
+        if not greedy and random.random() < self.epsilon:
             return random.randrange(self.action_size)
 
         state_tensor = torch.FloatTensor(state).unsqueeze(0).to(self.device)

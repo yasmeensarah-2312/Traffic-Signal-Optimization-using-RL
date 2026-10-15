@@ -76,6 +76,11 @@ class TrafficEnv:
     NORM_QUEUE_LENGTH = 20.0
     NORM_WAITING_TIME = 300.0
 
+    # Reward scale. The reward is -(average number of stopped vehicles) divided
+    # by this number, which keeps typical rewards around -1 to -5 instead of
+    # -20 to -60. Big reward values make DQN training unstable.
+    REWARD_QUEUE_SCALE = 10.0
+
     DIRECTIONS = ["north", "south", "east", "west"]
 
     def __init__(self, scenario_name, gui=False, max_steps=3000):
@@ -124,37 +129,52 @@ class TrafficEnv:
         target_phase = self.GREEN_PHASES[action]
         current_phase = ti.get_current_phase()
 
+        queue_sum = 0.0      # stopped vehicles, summed over EVERY simulation step
+        sim_steps = 0        # of this decision (yellow steps + green steps)
+        arrived_count = 0    # throughput: vehicles that finished their trip
+
         # Only insert a yellow transition if we are actually
         # switching to a DIFFERENT green phase.
         if current_phase in self.GREEN_PHASES and current_phase != target_phase:
             yellow_phase = self.YELLOW_FOR_GREEN[current_phase]
             ti.change_traffic_light_phase(yellow_phase)
 
-            for _ in range(self.YELLOW_DURATION):
-                traci.simulationStep()
-                self.current_step += 1
+            q, a = self._advance(self.YELLOW_DURATION)
+            queue_sum += q
+            arrived_count += a
+            sim_steps += self.YELLOW_DURATION
 
         # Now switch to (or stay on) the chosen green phase.
         ti.change_traffic_light_phase(target_phase)
 
+        # Only used for the logs and for validate_reward.py. NOT part of the reward.
         waiting_before = self._total_waiting_time()
-        arrived_count = 0
 
-        for _ in range(self.GREEN_DURATION):
-            traci.simulationStep()
-            self.current_step += 1
-            # Vehicles that completed their route and left the simulation
-            # this step -- this is our "throughput" metric for Person 4.
-            arrived_count += traci.simulation.getArrivedNumber()
+        q, a = self._advance(self.GREEN_DURATION)
+        queue_sum += q
+        arrived_count += a
+        sim_steps += self.GREEN_DURATION
 
         waiting_after = self._total_waiting_time()
         queue_after = sum(ti.get_queue_lengths().values())
 
-        # Reward design (simple, beginner-friendly version):
-        # If total waiting time went DOWN, reward is positive.
-        # If it went UP, reward is negative.
-        # This directly teaches the agent: "reduce waiting time."
-        reward = waiting_before - waiting_after
+        # ------------------------------------------------------------
+        # REWARD:  reward = -(average queue length over this decision) / scale
+        #
+        # "Queue length" = vehicles stopped on the incoming lanes (SUMO's
+        # halting vehicles). We average it over every simulation step of the
+        # decision, yellow steps included, so:
+        #   * the reward measures how BAD the traffic was while this action
+        #     was in effect (a level), not how much a running total changed;
+        #   * vehicles entering or leaving the network no longer create
+        #     fake rewards, because a vehicle only counts while it is
+        #     actually stopped in a queue;
+        #   * switching phases is no longer free: queues keep building
+        #     during the yellow steps and that cost lands in the reward.
+        # The reward is always <= 0. Closer to 0 means shorter queues.
+        # ------------------------------------------------------------
+        mean_queue = queue_sum / sim_steps
+        reward = -mean_queue / self.REWARD_QUEUE_SCALE
 
         done = (
             traci.simulation.getMinExpectedNumber() <= 0
@@ -188,6 +208,22 @@ class TrafficEnv:
     def _total_waiting_time(self):
         waiting_times = ti.get_waiting_times()
         return sum(waiting_times.values())
+
+    def _advance(self, n_steps):
+        """
+        Advances SUMO by n_steps. After every single step it samples the
+        total queue length, so the reward can be averaged over the whole
+        interval. Returns (sum of queue lengths over the steps,
+        vehicles that finished their trip during these steps).
+        """
+        queue_sum = 0.0
+        arrived = 0
+        for _ in range(n_steps):
+            traci.simulationStep()
+            self.current_step += 1
+            queue_sum += sum(ti.get_queue_lengths().values())
+            arrived += traci.simulation.getArrivedNumber()
+        return queue_sum, arrived
 
     def _get_state_vector(self):
         """
