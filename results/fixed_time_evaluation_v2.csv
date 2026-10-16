@@ -1,0 +1,7 @@
+scenario,total_waiting_time,average_waiting,average_queue_length,throughput,average_delay,simulation_steps,metric_steps,finished
+S1_normal,58685.0,32.71,32.71,560,38.07,1814,1794,True
+S2_equal_opposite,80516.0,28.92,28.92,644,34.24,2804,2784,True
+S3_one_side_heavy,74038.0,17.09,17.09,487,20.15,4352,4332,True
+S4_all_sides_heavy,248326.0,58.53,58.53,1340,69.01,4263,4243,True
+S5_changing_traffic,84742.0,41.32,41.32,664,49.07,2071,2051,True
+S6_sudden_surge,96712.0,44.34,44.34,708,52.76,2201,2181,True
