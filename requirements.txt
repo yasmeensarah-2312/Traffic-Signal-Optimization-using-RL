@@ -1,1 +1,21 @@
-# Python dependencies for the project will be added later
+# Intelligent Traffic Signal Optimization using Deep RL and YOLO
+
+# Deep Reinforcement Learning
+
+torch==2.14.0
+numpy==2.5.3
+
+# YOLO and video processing
+
+ultralytics==8.4.142
+opencv-python==5.0.0.93
+
+# Evaluation and visualization
+
+pandas==2.3.3
+matplotlib==3.11.1
+
+# SUMO Python interfaces
+
+traci==1.28.0
+sumolib==1.28.0
