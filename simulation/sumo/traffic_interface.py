@@ -58,9 +58,9 @@ def start_simulation(scenario_name, gui=True):
     )
 
     if gui:
-        sumo_binary = "sumo-gui"
+        sumo_binary = r"C:\Program Files (x86)\SUMO\bin\sumo-gui.exe"
     else:
-        sumo_binary = "sumo"
+        sumo_binary = r"C:\Program Files (x86)\SUMO\bin\sumo.exe"
 
     command = [
         sumo_binary,
