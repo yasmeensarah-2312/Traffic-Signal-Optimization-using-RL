@@ -1,0 +1,13 @@
+policy,scenario,total_stopped_vehicle_steps,average_stopped_vehicles_per_step,average_queue_length,throughput,average_delay,simulation_steps
+fixed_time,S1_normal,12407.0,24.814,24.814,233,29.9332,500
+dqn_greedy,S1_normal,4374.0,8.748,8.748,264,13.7409,500
+fixed_time,S2_equal_opposite,16282.0,32.564,32.564,250,40.2407,500
+dqn_greedy,S2_equal_opposite,9315.0,18.63,18.628,278,27.4607,500
+fixed_time,S3_one_side_heavy,10858.0,21.716,21.716,145,26.7643,500
+dqn_greedy,S3_one_side_heavy,7127.0,14.254,14.254,166,24.4695,500
+fixed_time,S4_all_sides_heavy,38353.0,76.706,76.706,389,94.4508,500
+dqn_greedy,S4_all_sides_heavy,24754.0,49.508,49.508,268,88.0042,500
+fixed_time,S5_changing_traffic,16072.0,32.144,32.144,272,41.3948,500
+dqn_greedy,S5_changing_traffic,10577.0,21.154,21.154,280,32.6152,500
+fixed_time,S6_sudden_surge,6306.0,12.612,12.612,135,17.1836,500
+dqn_greedy,S6_sudden_surge,4043.0,8.086,8.086,125,16.2578,500
