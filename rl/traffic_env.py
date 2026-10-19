@@ -14,8 +14,7 @@ and more structured:
 This file provides exactly that, by wrapping the functions Person 1
 already built. It does not duplicate any of Person 1's SUMO/TraCI code.
 
-Put this file inside your project's rl/ folder:
-    Traffic-Signal-Optimization-using-RL-main/rl/traffic_env.py
+
 """
 
 import os
