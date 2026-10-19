@@ -2,7 +2,6 @@
 train.py
 
 This is the file that actually runs training. It repeats the core loop
-from your PDF (page 7):
 
     Get state from SUMO -> DQN chooses action -> apply signal action ->
     advance SUMO -> calculate reward -> store experience -> train DQN -> repeat
@@ -10,10 +9,7 @@ from your PDF (page 7):
 Run this from inside the rl/ folder:
     python train.py
 
-IMPORTANT -- follow your PDF's own advice (page 6, item 16):
-Start with NUM_EPISODES = 3 just to confirm nothing crashes and the
-numbers look reasonable. Only once that works cleanly should you raise
-it to 50+ for real training -- that will take a while to run.
+
 """
 
 import csv
